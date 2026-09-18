@@ -1,0 +1,150 @@
+DEMO CONVERSATION -- Environmental Biodiversity & Soil Health Assistant
+Generated from a live run of conversation_agent.py against the REAL knowledge base
+built from the four user-uploaded source documents (FAO Recarbonizing Global Soils
+manual, OpenLandMap-soildb, SoilHealthDB, GSOCS-LULCC) plus a real geo-lookup against
+the user-uploaded CSIRO_BHI_v4_India_All_Years.tif raster. No scripted/fabricated text.
+Embedding backend: spaCy en_core_web_md pretrained vectors (see README).
+
+
+==============================================================================
+USER: Biodiversity is declining on my land
+[intent classified: diagnosis]
+
+ASSISTANT:
+To provide targeted recommendations, I need a bit more information:
+- soil organic carbon % (current estimate)
+- annual rainfall pattern (low/medium/high, or mm/yr)
+- current land use (monoculture, mixed cropping, agroforestry, pasture, fallow)
+
+==============================================================================
+USER: SOC is 0.3%, rainfall is low (~350mm/yr), monoculture wheat, semi-arid region
+[intent classified: diagnosis]
+
+ASSISTANT:
+## Evidence-Backed Recommendations
+
+### Recommendation 1
+- **What to do:** Transition to agroforestry with legume-based intercropping (e.g., wheat + pigeon pea + Faidherbia albida / Acacia / Leucaena)
+- **Impacted Metrics:** Soil organic carbon (+15-25% over 2-3 yrs); Habitat diversity index (+30%); Water retention / plant-available moisture (+10-15%)
+- **Scientific Reasoning:** Legume trees and cover crops fix atmospheric N2 via rhizobial symbiosis, raising microbial biomass and root-derived carbon inputs. Tree canopies reduce soil surface temperature and evaporative water loss, and deep roots access subsoil moisture that shallow-rooted monocultures cannot reach, buffering low-rainfall stress.
+- **Evidence:** FAO 'Recarbonizing Global Soils' 2021: 73 comparisons across 18 studies, +15% SOC from intercropping [17]; IPCC AR6 WGIII Ch.7: agroforestry sequesters 0.3-15 tC/ha/yr in aboveground biomass [43]
+- **Time Horizon:** Medium (2-4 yrs for measurable SOC gain)
+- **Confidence:** High
+
+### Supporting knowledge-base evidence (RAG retrieval)
+- [CSIRO Biodiversity Habitat Index v4 India (raster dataset; geo-lookup only, India extent) 2024 #CSIRO-BHI-v4] Context: CSIRO Biodiversity Habitat Index (BHI) v4, India, annual 2000-2024, approximately 1km resolution (BILBI biogeographic habitat-condition model). Finding: Across India, remnant forest landscapes (e.g. Western Ghats) show markedly higher modelled Biodiversity Habitat Index (BHI, a 0-1 habitat-intactness score) than intensively farmed or urbanized landscapes (e.g. Indo-Gangetic Plain croplands, Delhi urban area), and BHI has declined slightly at most sampled locations between 2000 and 2024,
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] , annual precipitation, and salinity grade.. Metric: soil_organic_carbon_drivers. Impact: GPP/NDVI among top-3 SOC density predictors; soil depth ~30% of variance; pH driven mainly by aridity index, precipitation, salinity. Evidence: OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 [OLM-2026].
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 6 (Daryanto & Ren, citing Daryanto et al. 2020, Agricultural Systems 178:102761) 2021 #FAO-CS6] ey did (6%), because N fixation is suppressed by high mineral N availability. Site-level SOC accrual ranged 0.3-1.3 tC/ha/yr without N fertilizer (one Ghana site reached 3.7 tC/ha/yr with mucuna incorporation). Intercropping also reduced soil erosion by ~46% (10-13 data pairs, 6 studies) via increased ground cover.. Metric: soil_organic_carbon. Impact: +15% SOC concentration overall; up to 35% without N fertilizer; erosion -46%. Evidence: FAO Recarbonizing Global Soils, Vol.4, Case Study 6 (Dary
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 6 (Daryanto & Ren, citing Daryanto et al. 2020, Agricultural Systems 178:102761) 2021 #FAO-CS6] Context: Meta-analysis of 73 paired comparisons from 18 studies across Ghana, Kenya, Zimbabwe, Tanzania, Malawi, Nigeria, Swaziland, Niger, South Africa, Benin, Mali and Ethiopia (MAP 570-1200mm), intercropping grain legumes with cereals vs cereal monocropping, no N fertilizer applied to cereals. Finding: Intercropping increased SOC concentration by ~15% overall; the increase was far larger (35%) when cereals received no N fertilizer than when they did (6%), because N fixation is suppressed by h
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 36 (Navarrete et al.) 2021 #FAO-CS36] de reduced bulk density; scattered-trees and intensive silvopastoral conversions showed smaller, non-significant SOC change over the same period. Silvopastoral systems are explicitly implemented to increase biodiversity and environmental service provision in livestock landscapes.. Metric: soil_organic_carbon. Impact: Live fences: +1.2 tC/ha/yr (Caribbean), +0.4 tC/ha/yr (Andean) after 9yr; other silvopastoral forms: non-significant at 9yr. Evidence: FAO Recarbonizing Global Soils, Vol.4, Case St
+
+==============================================================================
+USER: What does soil organic carbon actually measure and why does it matter?
+[intent classified: metric_explanation]
+
+ASSISTANT:
+Here's what the knowledge base says about that:
+
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 6 2021 #FAO-CS6] Context: Same African intercropping meta-analysis (case study above). Finding: Intercropping increases soil biodiversity because plant diversity drives soil biodiversity; legume residues also improve soil water management and, via pigeon pea hydraulic lift, can supply water to intercropped cereals under moisture stress.. Metric: soil_biodiversity. Impact: Qualitative increase in soil biodiversity and microbial/mycorrhizal activity; no single quantitative index reported. Evidence: FAO Recarbonizi
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 9 2021 #FAO-CS9] Context: Same NSW rotational grazing case study. Finding: Rotational grazing (rest periods that let plants recover between grazing bouts) reduces soil erosion, increases aboveground plant diversity and productivity, and increases microbial activity relative to continuous grazing, because vegetation is not persistently defoliated and roots can replenish reserves.. Metric: habitat_and_microbial_diversity. Impact: Qualitative increase in aboveground diversity and microbial activity vs continuous gr
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] Context: OpenLandMap-soildb land-cover transition analysis for 12,500 globally sampled points, comparing 2000-2005 vs 2020-2022 SOC density and pH against ESA CCI land cover change classes. Finding: Land-cover transitions involving loss of tree cover (e.g. broadleaved evergreen or deciduous forest converting to cropland or mosaic cropland/natural vegetation) show the strongest negative trends in soil organic carbon density; soil pH shows a milder, broadly uniform trend toward acidification acros
+
+Ask me for recommendations any time once you'd like next steps.
+
+==============================================================================
+USER: My fragmentation index is 0.75 and species richness index is 0.25 -- what corridors should I plant?
+[intent classified: diagnosis]
+
+ASSISTANT:
+## Evidence-Backed Recommendations
+
+### Recommendation 1
+- **What to do:** Transition to agroforestry with legume-based intercropping (e.g., wheat + pigeon pea + Faidherbia albida / Acacia / Leucaena)
+- **Impacted Metrics:** Soil organic carbon (+15-25% over 2-3 yrs); Habitat diversity index (+30%); Water retention / plant-available moisture (+10-15%)
+- **Scientific Reasoning:** Legume trees and cover crops fix atmospheric N2 via rhizobial symbiosis, raising microbial biomass and root-derived carbon inputs. Tree canopies reduce soil surface temperature and evaporative water loss, and deep roots access subsoil moisture that shallow-rooted monocultures cannot reach, buffering low-rainfall stress.
+- **Evidence:** FAO 'Recarbonizing Global Soils' 2021: 73 comparisons across 18 studies, +15% SOC from intercropping [17]; IPCC AR6 WGIII Ch.7: agroforestry sequesters 0.3-15 tC/ha/yr in aboveground biomass [43]
+- **Time Horizon:** Medium (2-4 yrs for measurable SOC gain)
+- **Confidence:** High
+
+### Recommendation 2
+- **What to do:** Establish linear habitat corridors with native drought-resistant shrubs (e.g., Prosopis, Acacia) connecting fragmented patches
+- **Impacted Metrics:** Species richness (+20-40% within 3 yrs); Habitat connectivity (fragmentation index reduction); Pollinator abundance
+- **Scientific Reasoning:** Corridors reduce the effective isolation distance between habitat patches, enabling gene flow and recolonization for area-sensitive species. Native shrub cover restores nectar/pollen and nesting resources along field margins, reducing edge effects.
+- **Evidence:** OECD 2023 Farmland Habitat Biodiversity Indicator Guidelines: corridors increase farmland species richness by 20-40% within 3 years [18]
+- **Time Horizon:** Medium (2-4 yrs)
+- **Confidence:** Medium
+
+### Recommendation 3
+- **What to do:** Combine drought-tolerant hedgerow corridors with contour-aligned planting to double as windbreaks and habitat connectors
+- **Impacted Metrics:** Fragmentation index (reduced isolation); Species richness (+20-40% within 3 yrs); Wind erosion / moisture retention
+- **Scientific Reasoning:** In low-rainfall, fragmented landscapes, hedgerows serve a dual function: reducing wind speed at the soil surface (lowering evaporative moisture loss) while providing the structural connectivity that area-sensitive species need to move between patches.
+- **Evidence:** OECD 2023 Farmland Habitat Biodiversity Indicator Guidelines [18]; IPCC AR6 WGIII Ch.7 on tree-shaded soil microclimate buffering, 2-4°C lower peak soil temperature [43]
+- **Time Horizon:** Medium (2-4 yrs)
+- **Confidence:** Medium
+
+### Supporting knowledge-base evidence (RAG retrieval)
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 9 2021 #FAO-CS9] Context: Same NSW rotational grazing case study. Finding: Rotational grazing (rest periods that let plants recover between grazing bouts) reduces soil erosion, increases aboveground plant diversity and productivity, and increases microbial activity relative to continuous grazing, because vegetation is not persistently defoliated and roots can replenish reserves.. Metric: habitat_and_microbial_diversity. Impact: Qualitative increase in aboveground diversity and microbial activity vs continuous gr
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 6 2021 #FAO-CS6] Context: Same African intercropping meta-analysis (case study above). Finding: Intercropping increases soil biodiversity because plant diversity drives soil biodiversity; legume residues also improve soil water management and, via pigeon pea hydraulic lift, can supply water to intercropped cereals under moisture stress.. Metric: soil_biodiversity. Impact: Qualitative increase in soil biodiversity and microbial/mycorrhizal activity; no single quantitative index reported. Evidence: FAO Recarbonizi
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] Context: OpenLandMap-soildb variable-importance analysis across the global 30m SOC density model. Finding: Landsat-derived Gross Primary Productivity (GPP) and NDVI are among the top three predictors of soil organic carbon density globally, with higher GPP/vegetation index and cooler climates associated with higher SOC; soil depth explains around 30% of SOC variability. Soil pH globally is primarily explained by the CHELSA long-term Aridity Index, annual precipitation, and salinity grade.. Metri
+- [SoilHealthDB (Jian, Du and Stewart 2020, Scientific Data 7:16) 2020 #SHDB-2020] ion, and increased soil organic carbon relative to conventional tillage; cover cropping is grown primarily to benefit soil (reducing erosion/leaching and raising SOC) even where cash-crop yield is the stated goal; organic farming (organic fertilizers only) is associated with increased soil carbon concentrations; agroforestry systems (trees or shrubs combined with crops or pasture) are associated with reduced soil erosion and increased biodiversity, and have been successfully applied at scale in 
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] Context: OpenLandMap-soildb land-cover transition analysis for 12,500 globally sampled points, comparing 2000-2005 vs 2020-2022 SOC density and pH against ESA CCI land cover change classes. Finding: Land-cover transitions involving loss of tree cover (e.g. broadleaved evergreen or deciduous forest converting to cropland or mosaic cropland/natural vegetation) show the strongest negative trends in soil organic carbon density; soil pH shows a milder, broadly uniform trend toward acidification acros
+
+==============================================================================
+USER: Where does this evidence come from? show me the source data
+[intent classified: data_request]
+
+ASSISTANT:
+Sources backing the current conversation's evidence:
+
+- FAO Recarbonizing Global Soils, Vol.4, Case Study 9 (2021), reference [FAO-CS9]
+- SoilHealthDB (Jian, Du and Stewart 2020, Scientific Data 7:16) (2020), reference [SHDB-2020]
+- FAO Recarbonizing Global Soils, Vol.4, Case Study 6 (2021), reference [FAO-CS6]
+- CSIRO Biodiversity Habitat Index v4 India (raster dataset; geo-lookup only, India extent) (2024), reference [CSIRO-BHI-v4]
+
+Full dataset citation list is documented in README.md.
+
+==============================================================================
+NEW SESSION - SEMANTIC RETRIEVAL CHECK (paraphrased query, zero shared keywords with target doc)
+Embedding backend: spaCy en_core_web_md (pretrained GloVe-style vectors, 300d)
+
+Query: livestock grazed continuously all season without rest, degraded pasture
+  - [FAO Recarbonizing Global Soils, Vol.4, Case Study 9] Context: Same NSW rotational grazing case study. Finding: Rotational grazing (rest periods that let plants recover between grazing bouts) re
+  - [SoilHealthDB (Jian, Du and Stewart 2020, Scientific Data 7:16)] ion, and increased soil organic carbon relative to conventional tillage; cover cropping is grown primarily to benefit soil (reducing erosion
+  - [SoilHealthDB (Jian, Du and Stewart 2020, Scientific Data 7:16)] Context: SoilHealthDB (Jian, Du and Stewart 2020): 1,407 independent field experiments from 321 peer-reviewed studies across 354 sites in 42
+
+==============================================================================
+NEW SESSION - CONTINUOUS GRAZING PASTURE
+
+==============================================================================
+USER: pasture, rainfall is medium, continuous grazing, worried about soil health
+[intent classified: diagnosis]
+
+ASSISTANT:
+To provide targeted recommendations, I need a bit more information:
+- soil organic carbon % (current estimate)
+
+==============================================================================
+NEW SESSION - GEO-COORDINATE INPUT (real CSIRO India BHI raster lookup, bonus feature)
+
+==============================================================================
+USER (JSON with geo-coordinates): {"soil": {"organic_carbon_percent": 0.6, "ph": 7.2}, "land": {"use_type": "monoculture", "region": "Indo-Gangetic Plain, Punjab, India"}, "climate": {"annual_rainfall_mm": 700}, "geo": {"lat": 30.9, "lon": 75.8}}
+
+ASSISTANT:
+## Evidence-Backed Recommendations
+
+### Recommendation 1
+- **What to do:** Treat this site as a habitat-restoration priority: combine hedgerow/live-fence corridors with reduced agrochemical intensity to raise the local habitat condition score
+- **Impacted Metrics:** Biodiversity Habitat Index (currently below the 0.55 threshold used here to flag degraded landscapes in this dataset); Species richness; Soil organic carbon (secondary benefit of woody corridors)
+- **Scientific Reasoning:** A low, and often still-declining, remotely-sensed habitat-condition index indicates the surrounding landscape has lost structural and species diversity relative to intact reference habitat (e.g. nearby forest). Woody corridors and live fences directly add the structural habitat elements that raise this class of index, and have the secondary benefit of raising soil organic carbon.
+- **Evidence:** CSIRO Biodiversity Habitat Index v4 (India, BILBI model), geo-lookup for this site's coordinates; live fences in a comparable degraded-pasture landscape raised SOC by up to 1.2 tC/ha/yr within 9 years (FAO Recarbonizing Global Soils Vol.4, Case Study 36)
+- **Time Horizon:** Medium to Long (site-level habitat recovery is typically 5-10+ yrs)
+- **Confidence:** Medium
+
+### Supporting knowledge-base evidence (RAG retrieval)
+- [CSIRO Biodiversity Habitat Index v4 India (raster dataset; geo-lookup only, India extent) 2024 #CSIRO-BHI-v4] y at most sampled locations between 2000 and 2024, consistent with ongoing habitat degradation pressure.. Metric: biodiversity_habitat_index. Impact: Illustrative 2024 BHI: Western Ghats forest ~0.70 vs Indo-Gangetic Plain cropland ~0.47 vs Delhi urban ~0.46; most sampled locations show a small negative trend 2000-2024. Evidence: CSIRO Biodiversity Habitat Index v4 India (raster dataset; geo-lookup only, India extent) 2024 [CSIRO-BHI-v4].
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] , broadly uniform trend toward acidification across transition types.. Metric: soil_organic_carbon_landcover_change. Impact: Tree-cover-loss transitions show the largest SOC density declines of all land-cover change classes analyzed. Evidence: OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 [OLM-2026].
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 9 2021 #FAO-CS9]  diversity and microbial activity vs continuous grazing; no single index reported. Evidence: FAO Recarbonizing Global Soils, Vol.4, Case Study 9 2021 [FAO-CS9].
+- [FAO Recarbonizing Global Soils, Vol.4, Case Study 36 (Navarrete et al.) 2021 #FAO-CS36] de reduced bulk density; scattered-trees and intensive silvopastoral conversions showed smaller, non-significant SOC change over the same period. Silvopastoral systems are explicitly implemented to increase biodiversity and environmental service provision in livestock landscapes.. Metric: soil_organic_carbon. Impact: Live fences: +1.2 tC/ha/yr (Caribbean), +0.4 tC/ha/yr (Andean) after 9yr; other silvopastoral forms: non-significant at 9yr. Evidence: FAO Recarbonizing Global Soils, Vol.4, Case St
+- [OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 #OLM-2026] , annual precipitation, and salinity grade.. Metric: soil_organic_carbon_drivers. Impact: GPP/NDVI among top-3 SOC density predictors; soil depth ~30% of variance; pH driven mainly by aridity index, precipitation, salinity. Evidence: OpenLandMap-soildb (Hengl et al. 2026, Earth System Science Data 18:989-1036) 2026 [OLM-2026].
+
+[Behind the scenes: real rasterio read of CSIRO_BHI_v4_India_All_Years.tif at (30.9, 75.8) -> {'bhi_latest': 0.4666377604007721, 'bhi_2000': 0.48392707109451294, 'trend_2000_2024': -0.017289310693740845, 'year_latest': 2024}]

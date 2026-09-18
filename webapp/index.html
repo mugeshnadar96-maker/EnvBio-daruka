@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soil &amp; Biodiversity Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14110d;
+    --panel:#1c1712;
+    --panel-2:#241d16;
+    --border:#332a1f;
+    --moss:#8fae5d;
+    --moss-dim:#5f7a41;
+    --clay:#c17a4a;
+    --text:#ece6da;
+    --text-mute:#a89e8c;
+    --text-faint:#6f6558;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* --- soil horizon strip: the one deliberate visual moment --- */
+  .horizon{
+    height:10px;
+    width:100%;
+    background:linear-gradient(to right,
+      #3b2f22 0%, #3b2f22 18%,
+      #55432c 18%, #55432c 40%,
+      #6b5636 40%, #6b5636 64%,
+      #8a7048 64%, #8a7048 82%,
+      #a88c5e 82%, #a88c5e 100%);
+    flex-shrink:0;
+  }
+
+  header{
+    padding:28px 24px 20px;
+    max-width:760px;
+    margin:0 auto;
+    width:100%;
+  }
+  header h1{
+    font-family:'Source Serif 4',Georgia,serif;
+    font-weight:600;
+    font-size:1.65rem;
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    margin:0;
+    color:var(--text-mute);
+    font-size:0.92rem;
+    line-height:1.5;
+    max-width:58ch;
+  }
+  header p code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.85em;
+    color:var(--clay);
+  }
+
+  main{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    justify-content:center;
+  }
+  #thread{
+    width:100%;
+    max-width:760px;
+    padding:8px 24px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+
+  .msg{max-width:88%;}
+  .msg.user{align-self:flex-end;}
+  .msg.assistant{align-self:flex-start;}
+
+  .msg.user .bubble{
+    background:var(--moss-dim);
+    color:#f4f1e8;
+    padding:10px 14px;
+    border-radius:14px 14px 3px 14px;
+    font-size:0.95rem;
+    line-height:1.5;
+  }
+
+  .msg.assistant .bubble{
+    border-left:2px solid var(--moss);
+    padding:2px 0 2px 16px;
+    font-size:0.95rem;
+    line-height:1.6;
+  }
+
+  .msg.assistant .bubble h3{
+    font-family:'Source Serif 4',Georgia,serif;
+    font-size:1.02rem;
+    font-weight:600;
+    margin:16px 0 4px;
+    color:var(--text);
+  }
+  .msg.assistant .bubble h3:first-child{margin-top:0;}
+  .msg.assistant .bubble h2{
+    font-family:'Source Serif 4',Georgia,serif;
+    font-size:1.1rem;
+    font-weight:600;
+    margin:4px 0 10px;
+    color:var(--text);
+  }
+
+  .field-row{
+    display:flex;
+    gap:8px;
+    margin:5px 0;
+    align-items:baseline;
+  }
+  .field-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--text-faint);
+    flex-shrink:0;
+    min-width:118px;
+  }
+  .field-value{color:var(--text);}
+  .evidence-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem;
+    color:var(--clay);
+  }
+
+  .msg.assistant .bubble ul{margin:6px 0; padding-left:20px;}
+  .msg.assistant .bubble li{margin:2px 0;}
+  .msg.assistant .bubble p{margin:6px 0;}
+
+  .typing{
+    align-self:flex-start;
+    color:var(--text-faint);
+    font-size:0.85rem;
+    font-family:'JetBrains Mono',monospace;
+    padding-left:16px;
+  }
+
+  form#composer{
+    max-width:760px;
+    margin:0 auto;
+    width:100%;
+    padding:16px 24px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .input-row{
+    display:flex;
+    gap:10px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:6px 6px 6px 14px;
+  }
+  .input-row:focus-within{border-color:var(--moss-dim);}
+  #text-input{
+    flex:1;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    font-size:0.95rem;
+    padding:10px 0;
+    resize:none;
+    outline:none;
+    line-height:1.4;
+    max-height:120px;
+  }
+  #text-input::placeholder{color:var(--text-faint);}
+  #send-btn{
+    background:var(--moss);
+    color:#14110d;
+    border:none;
+    border-radius:8px;
+    padding:0 18px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.88rem;
+    cursor:pointer;
+    align-self:center;
+  }
+  #send-btn:hover{background:#9fc06c;}
+  #send-btn:disabled{background:var(--border); color:var(--text-faint); cursor:not-allowed;}
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .examples{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .example-chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--text-mute);
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:100px;
+    padding:5px 11px;
+    cursor:pointer;
+  }
+  .example-chip:hover{border-color:var(--moss-dim); color:var(--text);}
+
+  #json-toggle{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--text-faint);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:underline;
+    text-underline-offset:3px;
+    padding:0;
+  }
+  #json-toggle:hover{color:var(--text-mute);}
+
+  #json-panel{
+    display:none;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  #json-panel.open{display:block;}
+  #json-panel p{
+    margin:0 0 8px;
+    font-size:0.78rem;
+    color:var(--text-faint);
+    font-family:'JetBrains Mono',monospace;
+  }
+  #json-input{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.8rem;
+    padding:10px;
+    min-height:120px;
+    resize:vertical;
+    outline:none;
+  }
+  #json-send{
+    margin-top:8px;
+    background:var(--clay);
+    color:#14110d;
+    border:none;
+    border-radius:6px;
+    padding:7px 14px;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.8rem;
+    cursor:pointer;
+  }
+
+  .empty-state{
+    color:var(--text-faint);
+    font-size:0.88rem;
+    padding:40px 0 0;
+    line-height:1.6;
+    max-width:52ch;
+  }
+
+  .status-dot{
+    display:inline-block;
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--text-faint);
+    margin-right:6px;
+  }
+  .status-dot.ok{background:var(--moss);}
+  .status-dot.err{background:var(--clay);}
+  #conn-status{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    color:var(--text-faint);
+  }
+</style>
+</head>
+<body>
+
+<div class="horizon"></div>
+
+<header>
+  <h1>Soil &amp; Biodiversity Assistant</h1>
+  <p>Evidence-backed recommendations from a real knowledge base — FAO's <code>Recarbonizing Global Soils</code>, <code>OpenLandMap-soildb</code>, <code>SoilHealthDB</code>, <code>GSOCS-LULCC</code> — plus a live geo-lookup against a CSIRO biodiversity raster for India. <span id="conn-status"><span class="status-dot" id="dot"></span>checking backend…</span></p>
+</header>
+
+<main>
+  <div id="thread">
+    <div class="empty-state" id="empty-state">
+      Describe your land — soil organic carbon, rainfall, land use, any biodiversity concerns — and this will ask what's missing before recommending anything. Try one of the examples below, or type your own.
+    </div>
+  </div>
+</main>
+
+<form id="composer">
+  <div id="json-panel">
+    <p>Structured input — mirrors the JSON shape the reasoning engine expects. The <code>geo</code> block only resolves inside India (CSIRO raster coverage).</p>
+    <textarea id="json-input">{
+  "soil": {"organic_carbon_percent": 0.6, "ph": 7.2},
+  "land": {"use_type": "monoculture", "region": "Punjab, India"},
+  "climate": {"annual_rainfall_mm": 700},
+  "geo": {"lat": 30.9, "lon": 75.8}
+}</textarea>
+    <button type="button" id="json-send">Send structured input</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="examples">
+      <button type="button" class="example-chip" data-ex="Biodiversity is declining on my land">biodiversity declining</button>
+      <button type="button" class="example-chip" data-ex="SOC is 0.3%, rainfall is low (~350mm/yr), monoculture wheat, semi-arid region">low SOC, semi-arid wheat</button>
+      <button type="button" class="example-chip" data-ex="My pasture is continuously grazed, medium rainfall">continuous grazing</button>
+    </div>
+    <button type="button" id="json-toggle">structured / geo input</button>
+  </div>
+
+  <div class="input-row">
+    <textarea id="text-input" rows="1" placeholder="Describe your land…"></textarea>
+    <button type="submit" id="send-btn">Send</button>
+  </div>
+</form>
+
+<script>
+const API_BASE = window.location.origin;
+const thread = document.getElementById('thread');
+const textInput = document.getElementById('text-input');
+const composer = document.getElementById('composer');
+const sendBtn = document.getElementById('send-btn');
+const emptyState = document.getElementById('empty-state');
+const jsonToggle = document.getElementById('json-toggle');
+const jsonPanel = document.getElementById('json-panel');
+const jsonInput = document.getElementById('json-input');
+const jsonSend = document.getElementById('json-send');
+const dot = document.getElementById('dot');
+const connStatus = document.getElementById('conn-status');
+
+textInput.addEventListener('input', () => {
+  textInput.style.height = 'auto';
+  textInput.style.height = Math.min(textInput.scrollHeight, 120) + 'px';
+});
+
+document.querySelectorAll('.example-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    textInput.value = chip.dataset.ex;
+    textInput.dispatchEvent(new Event('input'));
+    textInput.focus();
+  });
+});
+
+jsonToggle.addEventListener('click', () => {
+  jsonPanel.classList.toggle('open');
+});
+
+function addUserMessage(text) {
+  emptyState.remove();
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `<div class="bubble"></div>`;
+  div.querySelector('.bubble').textContent = text;
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function formatAssistantMarkdown(md) {
+  // Minimal, purpose-built renderer for this assistant's own output shape
+  // (### headers, bold **field:** labels, bullet lists) -- not a general
+  // markdown engine.
+  const lines = md.split('\n');
+  let html = '';
+  let inList = false;
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) { if (inList) { html += '</ul>'; inList = false; } continue; }
+    if (line.startsWith('## ')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<h2>${escapeHtml(line.slice(3))}</h2>`;
+    } else if (line.startsWith('### ')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<h3>${escapeHtml(line.slice(4))}</h3>`;
+    } else if (line.startsWith('- **') && line.includes(':**')) {
+      if (inList) { html += '</ul>'; inList = false; }
+      const m = line.match(/^- \*\*(.+?):\*\*\s*(.*)$/);
+      if (m) {
+        const label = m[1];
+        const isEvidence = /evidence/i.test(label);
+        html += `<div class="field-row"><span class="field-label">${escapeHtml(label)}</span><span class="${isEvidence ? 'evidence-tag' : 'field-value'}">${escapeHtml(m[2])}</span></div>`;
+      } else {
+        html += `<p>${escapeHtml(line.slice(2))}</p>`;
+      }
+    } else if (line.startsWith('- ')) {
+      if (!inList) { html += '<ul>'; inList = true; }
+      html += `<li>${escapeHtml(line.slice(2))}</li>`;
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += `<p>${escapeHtml(line)}</p>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function addAssistantMessage(markdownText) {
+  const div = document.createElement('div');
+  div.className = 'msg assistant';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = formatAssistantMarkdown(markdownText);
+  div.appendChild(bubble);
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function addTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typing-indicator';
+  div.textContent = 'retrieving evidence…';
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+  return div;
+}
+
+async function sendText(text) {
+  addUserMessage(text);
+  textInput.value = '';
+  textInput.style.height = 'auto';
+  sendBtn.disabled = true;
+  const typing = addTyping();
+  try {
+    const res = await fetch(`${API_BASE}/chat`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await res.json();
+    typing.remove();
+    addAssistantMessage(data.response ?? '(no response)');
+  } catch (err) {
+    typing.remove();
+    addAssistantMessage(`Couldn't reach the backend at ${API_BASE}. Is \`python3 main.py --serve\` running? (${err})`);
+  }
+  sendBtn.disabled = false;
+  textInput.focus();
+}
+
+async function sendJson(payload) {
+  addUserMessage(JSON.stringify(payload, null, 0));
+  const typing = addTyping();
+  try {
+    const res = await fetch(`${API_BASE}/chat/json`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    typing.remove();
+    addAssistantMessage(data.response ?? '(no response)');
+  } catch (err) {
+    typing.remove();
+    addAssistantMessage(`Couldn't reach the backend at ${API_BASE}. Is \`python3 main.py --serve\` running? (${err})`);
+  }
+}
+
+composer.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const text = textInput.value.trim();
+  if (!text) return;
+  sendText(text);
+});
+
+textInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    composer.requestSubmit();
+  }
+});
+
+jsonSend.addEventListener('click', () => {
+  let payload;
+  try {
+    payload = JSON.parse(jsonInput.value);
+  } catch (err) {
+    alert('That is not valid JSON: ' + err.message);
+    return;
+  }
+  sendJson(payload);
+});
+
+async function checkConnection() {
+  try {
+    const res = await fetch(`${API_BASE}/memory`);
+    if (res.ok) {
+      dot.classList.add('ok');
+      connStatus.lastChild.textContent = 'connected';
+    } else {
+      throw new Error('bad status');
+    }
+  } catch {
+    dot.classList.add('err');
+    connStatus.lastChild.textContent = 'backend not reachable — run python3 main.py --serve';
+  }
+}
+checkConnection();
+</script>
+
+</body>
+</html>
